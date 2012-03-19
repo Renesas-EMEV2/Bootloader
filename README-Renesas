@@ -1,0 +1,51 @@
+
+How to build the bootloader for Renesas EMMA EV2 platforms.
+
+> export CROSS_COMPILE=arm-linux-androideabi-
+> cd u-boot
+
+1) for eMMC boot
+
+> make distclean
+> make emev_emmc_config
+> make
+
+Got these files:
+
+...
+-rwxr-xr-x    1 root root  390296 Feb  2 05:47 u-boot.srec
+-rw-r--r--    1 root root  114797 Feb  2 05:47 u-boot.map
+-rwxr-xr-x    1 root root  130068 Feb  2 05:47 u-boot.bin
+-rwxr-xr-x    1 root root  453562 Feb  2 05:47 u-boot
+-rw-r--r--    1 root root   19488 Feb  2 05:47 System.map
+-rw-r--r--    1 root root  138260 Feb  2 05:47 u-boot-emmc.bin
+
+2) for SD "line" boot (i.e. including the 'cramfs' File System)
+
+> make distclean
+> make emev_sd_line_config
+> make
+...
+
+-rwxr-xr-x    1 root root  389442 Feb  2 06:08 u-boot.srec
+-rw-r--r--    1 root root  129784 Feb  2 06:08 uboot-sd.bin
+-rw-r--r--    1 root root  114675 Feb  2 06:08 u-boot.map
+-rwxr-xr-x    1 root root  129784 Feb  2 06:08 u-boot.bin
+-rwxr-xr-x    1 root root  447246 Feb  2 06:08 u-boot
+-rw-r--r--    1 root root   19523 Feb  2 06:08 System.map
+-rwxr-xr-x    1 root root    8312 Feb  2 06:08 sdboot.bin
+
+3) for SD boot
+
+> make distclean
+> make emev_sd_config
+> make
+...
+
+-rw-rw-r--   1 ffxx68 ffxx68  107440 2012-02-23 06:51 u-boot.map
+-rwxrwxr-x   1 ffxx68 ffxx68  518590 2012-02-23 06:51 u-boot
+-rwxrwxr-x   1 ffxx68 ffxx68  368258 2012-02-23 06:51 u-boot.srec
+-rwxrwxr-x   1 ffxx68 ffxx68  122728 2012-02-23 06:51 u-boot.bin
+-rw-rw-r--   1 ffxx68 ffxx68   19173 2012-02-23 06:51 System.map
+-rw-rw-r--   1 ffxx68 ffxx68  122728 2012-02-23 06:51 uboot-sd.bin
+-rwxrwxr-x   1 ffxx68 ffxx68    8192 2012-02-23 06:51 sdboot.bin
