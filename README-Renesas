@@ -80,7 +80,7 @@ Booting the system from SD card
 
 *** To be tested ***
 
-The boot from SD card normally invokes the "cramfscmd", which may points to a basic installation script used to replace the kernel uImage and main file system (Andorid) on the internal NAND partitions.
+The boot from SD card normally invokes the "cramfscmd", which normally points to a basic installation script used to replace the kernel uImage and main file system (i.e. Android) on the internal NAND partitions. See below for an example.
 
 If we wish to make the system start the Android OS straight from the SD card, the following approach could be used:
 
@@ -90,7 +90,7 @@ If we wish to make the system start the Android OS straight from the SD card, th
 
  - - - - 
 
-Firmware installation script
+Firmware installation example
 
 If you mount the cramfs to your file system, out of a typical stock firmware package (which includes both a "cramfs4" file and an "install.sh" script), you can see how the firmware install script is invoked:
 
@@ -113,7 +113,7 @@ Note how the boot command includes "init=/linuxrc", which points to a standard b
 
  - - - -
 
-Examples
+Build Examples
 
 > export CROSS_COMPILE=arm-linux-androideabi-
 > cd u-boot
