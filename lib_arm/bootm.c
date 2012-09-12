@@ -80,7 +80,7 @@ int do_bootm_linux(int flag, int argc, char *argv[], bootm_headers_t *images)
 
 	show_boot_progress (15);
 
-	debug ("## Transferring control to Linux (at address %08lx) ...\n",
+	printf ("\n## Transferring control to Linux (at address %08lx) ...\n",
 	       (ulong) theKernel);
 
 #if defined (CONFIG_SETUP_MEMORY_TAGS) || \
@@ -124,8 +124,6 @@ int do_bootm_linux(int flag, int argc, char *argv[], bootm_headers_t *images)
 	setup_end_tag (bd);
 #endif
 
-	/* we assume that the kernel is in place */
-	printf ("\nStarting kernel ...\n\n");
 
 #ifdef CONFIG_USB_DEVICE
 	{
@@ -145,6 +143,9 @@ int do_bootm_linux(int flag, int argc, char *argv[], bootm_headers_t *images)
 	volatile ulong *hw_info = SRAM_HWINFO_KERNL;
 	*hw_info = *(volatile ulong *)SRAM_HWINFO_BOOT;
 #endif
+
+	/* we assume that the kernel is in place */
+	printf ("\nStarting kernel ...\n\n");
 
 	theKernel (0, machid, bd->bi_boot_params);
 	/* does not return */

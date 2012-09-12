@@ -26,6 +26,7 @@
 
 #define KERNEL_START		CONFIG_SYS_LOAD_ADDR	/* SDRAM */
 #define KERNEL_SIZE		0x00480000	/* 4.5M */
+#define KERNEL_SIZE		0x00500000	/* 5M */
 
 #define FS_START		0x46000000	/* SDRAM */
 #define FS_SIZE			0x01c00000	/* 28M */

@@ -140,6 +140,7 @@ err_read:
 	spi_flash_free(env_flash);
 	env_flash = NULL;
 err_probe:
+	puts("*** Warning - bad flash probe\n");
 err_crc:
 	puts("*** Warning - bad CRC, using default environment\n\n");
 

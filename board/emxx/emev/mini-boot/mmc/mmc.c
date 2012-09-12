@@ -816,7 +816,7 @@ fat_cpy_data(unsigned char *read_data, fat_info_t *fat_info, unsigned int start_
 		if (SD_BOOT_MAX_LOADSIZE == max_size ) {
 			dbg_print(" uboot-sd.bin is over 512KB.\n");
 		} else {
-			dbg_print(" uImage is over 4.5MB.\n");
+			dbg_print(" uImage is over max size (KERNEL_SIZE = 5 Mb).\n");
 		}
 		return -1;
 	}
@@ -917,6 +917,9 @@ mini_boot( void )
 	/* uboot-sd.bin */
 #ifdef CONFIG_EMXX_SDBOOT_LINE
 	dbg_print("\n\nLoad LineSystem U-BOOT ... ");
+#endif
+#ifdef CONFIG_EMXX_SDTEST
+	dbg_print("\n\nLoading U-BOOT for a bootable SD-card... ");
 #endif
 	fat_info.now_fat_sec = -1;
 	ret = fat_get_cluster(read_data, &fat_info, LOAD_TYPE_UBOOT);

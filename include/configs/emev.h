@@ -114,15 +114,19 @@
 #define CONFIG_BOOTDELAY	3
 #endif
 
-#if defined(CONFIG_EMXX_EMMCBOOT) || defined(CONFIG_EMXX_ESDBOOT)
+#if defined(CONFIG_EMXX_EMMCBOOT) || defined(CONFIG_EMXX_ESDBOOT) 
 #define CONFIG_EXT3_ROOT	"/dev/mmcblk0p3"	/* emmc-boot or esd-boot */
+#elif defined(CONFIG_EMXX_SDTEST)
+#define CONFIG_EXT3_ROOT	"/dev/mmcblk1p3"        /* test-sd boot */
 #elif CONFIG_EMEV_EMMC_1Piece
 #define CONFIG_EXT3_ROOT	"/dev/mmcblk1p3"	/* sd-boot (emmc 1 device) */
 #else
 #define CONFIG_EXT3_ROOT	"/dev/mmcblk2p3"	/* sd-boot (emmc 2 device) */
 #endif
 
-#define CONFIG_DDR		"mem=167M"	/* 167MByte */
+/* #define CONFIG_DDR		"mem=167M"	/* 167MByte */
+#define CONFIG_DDR              "mem=129M@0x40000000 mem=256M@0x50000000"
+
 #define CONFIG_BOOTARGS		"root=/dev/null noinitrd init=/linuxrc console=ttyS0,115200n8n SELINUX_INIT=no "CONFIG_DDR" ro video=qfb: ip=none rootflags=physaddr=0x00500000"
 
 #ifdef CONFIG_EMXX_PALLADIUM
@@ -133,12 +137,12 @@
 #ifdef CONFIG_EMXX_SDBOOT_LINE	/* SD boot linesystem */
 #define CONFIG_EXT3CMD		"setenv bootargs root=/dev/null noinitrd init=/linuxrc console=ttyS0,115200n8n SELINUX_INIT=no mem=96M@0x40000000 rw video=qfb: ip=none rootflags=physaddr=0x46000000\;bootm 40007fc0"
 #else
-#define CONFIG_EXT3CMD		"setenv bootargs root=\$(ext3_root) noinitrd init=/linuxrc console=ttyS0,115200n8n SELINUX_INIT=no \$(cfg_ddr) rw video=qfb: ip=none rootfstype=ext3 rootwait\;bootm 40007fc0"
+#define CONFIG_EXT3CMD		"setenv bootargs root=\$(ext3_root) noinitrd init=/init console=ttyS0,115200n8n SELINUX_INIT=no \$(cfg_ddr) rw video=qfb: ip=none rootfstype=ext3 rootwait\;bootm 40007fc0"
 #endif
 #endif
 #define CONFIG_NFSCMD		"setenv bootargs root=/dev/nfs noinitrd init=/linuxrc console=ttyS0,115200n8n SELINUX_INIT=no \$(cfg_ddr) ro video=qfb: nfsroot=\$(serverip):\$(rootpath),timeo=30 ip=\$(ipaddr):\$(serverip):\$(gatewayip):\$(netmask):\$(hostname):eth0:off\;bootm 00080000"
 
-#if defined(CONFIG_EMXX_MMCBOOT)
+#if defined(CONFIG_EMXX_MMCBOOT) || defined(CONFIG_EMXX_SDTEST)
 #define CONFIG_BOOTCOMMAND	"run ext3cmd"
 #else
 #define CONFIG_BOOTCOMMAND	"run cramfscmd"
@@ -161,7 +165,7 @@
  */
 #define CONFIG_SYS_LONGHELP		/* undef to save memory     */
 #define CONFIG_SYS_PROMPT		"EM/EV # "	/* the primary prompt string */
-#define CONFIG_SYS_CBSIZE		384			/* Console I/O Buffer Size  */
+#define CONFIG_SYS_CBSIZE		384		/* Console I/O Buffer Size  */
 /* Print Buffer Size */
 #define CONFIG_SYS_PBSIZE		(CONFIG_SYS_CBSIZE + sizeof(CONFIG_SYS_PROMPT) + 16)
 #define CONFIG_SYS_MAXARGS		24			/* max number of command args   */
@@ -238,7 +242,7 @@
 #define CONFIG_ENV_TMP_ADDR		0x410C0000		/* 0x410C0000 - 0x410FFFFF */
 
 /* addr of environment */
-#if defined(CONFIG_EMXX_SDBOOT)
+#if defined(CONFIG_EMXX_SDBOOT) || defined(CONFIG_EMXX_SDTEST)
 #define CONFIG_ENV_OFFSET		0x0			/* environment starts p2 + here  */
 #else	/* defined(CONFIG_EMXX_EMMCBOOT) || defined(CONFIG_EMXX_ESDBOOT) */
 #define CONFIG_ENV_OFFSET		0x200			/* environment starts p1 + here  */

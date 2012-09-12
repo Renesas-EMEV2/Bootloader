@@ -3034,6 +3034,7 @@ omap3_zoom1_config :	unconfig
 emev_config \
 emev_emmc_config \
 emev_sd_config \
+emev_sdtest_config \
 emev_esd_config \
 emev_cfi_emmc_config \
 emev_cfi_sd_config \
@@ -3047,6 +3048,10 @@ emev_pdium_emmc_config : unconfig
 	@if  [ "$(findstring _sd_, $@)" ] ; then \
 		echo Add EMEV SD BOOT Option ; \
 		echo "#define CONFIG_EMXX_SDBOOT" > $(obj)include/config.h; \
+	elif [ "$(findstring _sdtest_, $@)" ] ; then \
+		echo Add EMEV test-SD BOOT Option ; \
+		echo "#define CONFIG_EMXX_SDTEST" > $(obj)include/config.h; \
+		echo "#define CONFIG_EMXX_SDBOOT" >> $(obj)include/config.h; \
 	elif [ "$(findstring _emmc_, $@)" ] ; then \
 		echo Add EMEV eMMC BOOT Option ; \
 		echo "#define CONFIG_EMXX_EMMCBOOT" > $(obj)include/config.h; \
@@ -3075,6 +3080,9 @@ emev_pdium_emmc_config : unconfig
 	fi
 	@$(MKCONFIG) -a emev arm arm_cortexa9 emev emxx emxx
 	@if  [ "$(findstring _sd_, $@)" ] ; then \
+		echo "CONFIG_SD_U_BOOT = y" >>  $(obj)include/config.mk ; \
+	fi
+	@if  [ "$(findstring _sdtest_, $@)" ] ; then \
 		echo "CONFIG_SD_U_BOOT = y" >>  $(obj)include/config.mk ; \
 	fi
 	@if  [ "$(findstring _emmc_, $@)" ] ; then \

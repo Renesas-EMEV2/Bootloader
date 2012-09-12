@@ -29,6 +29,7 @@
 #define SMU_USIAU0GCLKCTRL_SCLKENA	0xffffffff
 #define	SMU_USIAU0SCLKDIV_VAL		0x00000003	/* 229.376MHz(=PLL3(229.376MHz) * 1/ 4) */
 
+#define DEBUG 1
 #ifdef DEBUG
 static void hex2char(unsigned long val);
 #endif
