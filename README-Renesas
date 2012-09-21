@@ -66,21 +66,98 @@ Hence, for different build configurations:
 
  emev_emmc_config -> starts "ext3cmd" with root fs set to /dev/mmcblk0p3 (the internal eMMC NAND, partition 3)
  emev_sd_config -> starts "cramfscmd" with root fs set to /dev/mmcblk1p3 (the external SD-card Flash, partition 3)
- emev_sdtest_config -> starts "ext3cmd" with root fs set to /dev/mmcblk1p3  (the external SD-card Flash, partition 3)
+ emev_sdtest_config -> starts "ext3cmd" with root fs set to /dev/mmcblk1p3 (the external SD-card Flash, partition 3)
 
- - - - - 
 
-Firmware installation example
+ - - - -
 
-If you mount the cramfs to your file system, out of a typical stock firmware package (which includes both a "cramfs4" file and an "install.sh" script), you can see how the firmware install script is invoked:
+Using a "bootable" SD card
 
-Code:
+Booting from SD card is normally meant for firmware updates. This invokes the "cramfscmd", which points to a basic installation script used to replace the kernel uImage and main file system (i.e. Android) on the internal NAND partitions (as explained in next section below).
+
+We could also make the system start the Android on the SD card itself, by properly partitioning and preparing it to be bootable, for faster test cycles during development stages.
+
+The following approach could be used:
+
+1) the SD card should be partitioned and prepared in a way that is similar to the internal NAND
+2) the Android init.rc should be corrected to mount the fs to SD card partitions, in place of the NAND ones
+3) the uboot-sd.bin should boot with "run ext3cmd" with root fs at "/dev/mmcblk1p3" (the SD card, partition 3)
+
+The complete script to prepare the SD card is found at:
+
+ https://github.com/Renesas-EMEV2/Renesas-BootSD
+
+The following configuration takes care of building the bootloader as per point 3 above:
+
+ emev_sdtest_config
+
+ - - - - -
+
+Build Examples
+
+ export CROSS_COMPILE=arm-linux-eabi-  (or whatever build toolchain used)
+ cd u-boot
+
+1) for eMMC boot
+
+ make distclean
+ make emev_emmc_config
+ make
+...
+ ls -lrt
+...
+-rw-r--r--   1 ffxx68 ffxx68  131172 2012-09-21 08:39 u-boot-emmc.bin
+
+2) for simple SD boot 
+ 
+ make distclean
+ make emev_sd_config
+ make
+...
+ ls -lrt
+...
+-rw-r--r--   1 ffxx68 ffxx68  122712 2012-09-21 08:41 uboot-sd.bin
+-rwxr-xr-x   1 ffxx68 ffxx68    8477 2012-09-21 08:41 sdboot.bin
+
+3) for SD "line system", including the 'cramfs' File System, e.g. for firmware updates
+
+ make distclean
+ make emev_sd_line_config
+Add EMEV SD BOOT Option
+Add LINE SYSTEM Option
+ make
+...
+ ls -lrt
+...
+-rw-r--r--   1 ffxx68 ffxx68  122728 2012-09-21 08:46 uboot-sd.bin
+-rwxr-xr-x   1 ffxx68 ffxx68    8768 2012-09-21 08:46 sdboot.bin
+
+
+4) for a test, bootable SD-card
+
+ make distclean
+ make emev_sdtest_config
+Add EMEV test-SD BOOT Option
+ make
+...
+ ls -lrt
+...
+-rw-r--r--   1 ffxx68 ffxx68  122712 2012-09-21 08:36 uboot-sd.bin
+-rwxr-xr-x   1 ffxx68 ffxx68    8544 2012-09-21 08:36 sdboot.bin
+
+ - - - - -
+
+Firmware "flashing" on final device
+
+Mounting for example to a host Linux file system the cramfs out of a typical stock firmware package (which includes both a "cramfs4" file and an "install.sh" script), you can find how the firmware install script is invoked:
+
+E.g.
 
 sudo mkdir /mnt/cramfs
-sudo mount -o loop cramfs4 /mnt/cramfs
+sudo mount -o loop cramfs /mnt/cramfs
 ls -l /mnt/cramfs/linuxrc
 lrwxrwxrwx 1 root root 11 1970-01-01 01:00 /mnt/cramfs/linuxrc -> bin/busybox
-cd /mnt/cramfs/etc/init.d/
+cd /mnt/cramfs/etc/init.d
 cat rcS
 ...
     INSTALL_SH=`ls /tmp/sd/install.sh`
@@ -91,54 +168,11 @@ cat rcS
 
 Note how the boot command includes "init=/linuxrc", which points to a standard busybox executable. This will by default invoke the "::sysinit:/etc/init.d/rcS" action.
 
- - - - -
+An example script to prepare an SD card for firmware update is given:
 
-Using a "bootable" SD card
+ fwupd.sh
 
-The boot from SD card is normally meant for firmware updates. This invokes the "cramfscmd", which points to a basic installation script used to replace the kernel uImage and main file system (i.e. Android) on the internal NAND partitions.
+which will generate all bootlaoder binaries and move files to destination, which could also be a FAT-32 or FAT-16 SD card root dir.
 
-We could also make the system start the Android on the SD card, properly prepared to be bootable, for faster test cycles during development stages. 
-The following approach could be used:
+NOTE - android fs (file name "android-fs4.tar.gz") name and kernel uImage (renamed to "uImage4") are not included and should be loaded on SD separately.
 
-1) the SD card should be partitioned and prepared in a way that is similar to the internal NAND
-2) the Android init.rc should be corrected to mount the fs to SD card partitions, in place of the NAND ones
-3) the uboot-sd.bin should boot with "run ext3cmd" with root fs at "/dev/mmcblk1p3" (the SD card, partition 3)
-
-The following configuration takes care of point 3 above:
-
- emev_sdtest_config
-
- - - - -
-
-Build Examples
-
-> export CROSS_COMPILE=arm-linux-eabi-  (or whatever build toolchain used)
-> cd u-boot
-
-1) for eMMC boot
-
-> make distclean
-> make emev_emmc_config
-> make
-
-2) for SD boot (i.e. including the 'cramfs' File System, for firmware updates)
-
-> make distclean
-> make emev_sd_config
-> make
-
-3) for a bootable SD-card
-
-> make distclean
-> make emev_sdtest_config
-> make
-
-In either cases, the follwong files will be rebuilt:
-
--rw-rw-r--   1 ffxx68 ffxx68  107440 2012-02-23 06:51 u-boot.map
--rwxrwxr-x   1 ffxx68 ffxx68  518590 2012-02-23 06:51 u-boot
--rwxrwxr-x   1 ffxx68 ffxx68  368258 2012-02-23 06:51 u-boot.srec
--rwxrwxr-x   1 ffxx68 ffxx68  122728 2012-02-23 06:51 u-boot.bin
--rw-rw-r--   1 ffxx68 ffxx68   19173 2012-02-23 06:51 System.map
--rw-rw-r--   1 ffxx68 ffxx68  122728 2012-02-23 06:51 uboot-sd.bin
--rwxrwxr-x   1 ffxx68 ffxx68    8192 2012-02-23 06:51 sdboot.bin
