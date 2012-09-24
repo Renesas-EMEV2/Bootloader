@@ -68,29 +68,6 @@ Hence, for different build configurations:
  emev_sd_config -> starts "cramfscmd" with root fs set to /dev/mmcblk1p3 (the external SD-card Flash, partition 3)
  emev_sdtest_config -> starts "ext3cmd" with root fs set to /dev/mmcblk1p3 (the external SD-card Flash, partition 3)
 
-
- - - - -
-
-Using a "bootable" SD card
-
-Booting from SD card is normally meant for firmware updates. This invokes the "cramfscmd", which points to a basic installation script used to replace the kernel uImage and main file system (i.e. Android) on the internal NAND partitions (as explained in next section below).
-
-We could also make the system start the Android on the SD card itself, by properly partitioning and preparing it to be bootable, for faster test cycles during development stages.
-
-The following approach could be used:
-
-1) the SD card should be partitioned and prepared in a way that is similar to the internal NAND
-2) the Android init.rc should be corrected to mount the fs to SD card partitions, in place of the NAND ones
-3) the uboot-sd.bin should boot with "run ext3cmd" with root fs at "/dev/mmcblk1p3" (the SD card, partition 3)
-
-The complete script to prepare the SD card is found at:
-
- https://github.com/Renesas-EMEV2/Renesas-BootSD
-
-The following configuration takes care of building the bootloader as per point 3 above:
-
- emev_sdtest_config
-
  - - - - -
 
 Build Examples
@@ -149,9 +126,21 @@ Add EMEV test-SD BOOT Option
 
 Firmware "flashing" on final device
 
-Mounting for example to a host Linux file system the cramfs out of a typical stock firmware package (which includes both a "cramfs4" file and an "install.sh" script), you can find how the firmware install script is invoked:
+Installing a new firmware installation (i.e. "flashing") on Renesas devices implies having an FAT-32 or FAT-16 SD card, containing at least:
 
-E.g.
+ - sdboot.bin and uboot-sd.bin built from "emev_sd_line_config"
+ - a uImage with a kernel providing the basic services for file system access and update the screen buffer (to show installation progress)
+ - a cramfs file system, to run the installation
+ - an installation script
+ - the u-boot-emmc.bin built from "emev_emmc_config" and renamed to uboot4.bin
+ - the final kernel image, renamed to uImage4
+ - the complete userland file system, renamed to android-fs4.tar.gz
+
+Starting the device with the Volume+ & Power button will trigger the SD card boot, which will in turn start the install routines.
+
+Note - sdboot.bin and uboot-sd.bin built from "emev_sd_line_config"
+
+Mounting for example onto a host Linux sytem the "cramfs" found in a typical stock firmware package from a Livall tablet, you can find how flashing works. E.g:
 
 sudo mkdir /mnt/cramfs
 sudo mount -o loop cramfs /mnt/cramfs
@@ -166,13 +155,38 @@ cat rcS
     fi
 ...
 
-Note how the boot command includes "init=/linuxrc", which points to a standard busybox executable. This will by default invoke the "::sysinit:/etc/init.d/rcS" action.
+The boot command includes "init=/linuxrc", which points to a standard busybox executable. This will by default invoke the "::sysinit:/etc/init.d/rcS" action. This is how install.sh is invoked. Inside install.sh, you will find the instructin to transfer the bootloader, complete kernel image and Android file system onto the internal NAND partitions.
+
+The process istanerted
 
 An example script to prepare an SD card for firmware update is given:
 
- fwupd.sh
+ fwupd/fwupd.sh
 
-which will generate all bootlaoder binaries and move files to destination, which could also be a FAT-32 or FAT-16 SD card root dir.
+which will generate all bootlaoder binaries and move files to destination, which could also be the SD card root dir.
 
-NOTE - android fs (file name "android-fs4.tar.gz") name and kernel uImage (renamed to "uImage4") are not included and should be loaded on SD separately.
+NOTE - The android file system (android-fs4.tar.gz) and kernel image (uImage4) are not included and should be loaded onto SD separately.
 
+ - - - - -
+
+Running a "bootable" SD card
+
+Booting from SD card is normally meant for firmware updates, but we could also make the system start the Android on the SD card itself, by properly partitioning and preparing it to be bootable, for faster test cycles during development stages.
+
+The following approach could be used:
+
+1) the SD card should be partitioned and prepared in a way that is similar to the internal NAND
+2) the Android init.rc should be corrected to mount the fs to SD card partitions, in place of the NAND ones
+3) the uboot-sd.bin should boot with "run ext3cmd" with root fs at "/dev/mmcblk1p3" (the SD card, partition 3)
+
+The following configuration takes care of building the bootloader as per point 3 above:
+
+ emev_sdtest_config
+
+The complete script to prepare the SD card in such way is provided:
+
+ testsd/testsd.sh /dev/sdd  (where "/dev/sdd" is the mount point of the SD on the host)
+
+including the uboot make, SD partitioning and creation steps.
+
+NOTE - The android file system (android-fs4.tar.gz) and kernel image (uImage) are not included and should be stored in testsd/ before executing the script. Also, the android init.rc should have been patched assuming root fs at "/dev/mmcblk1p3", in place of the usual "/dev/mmcblk0p3".

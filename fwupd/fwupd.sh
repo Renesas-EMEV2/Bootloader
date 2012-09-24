@@ -1,9 +1,9 @@
 # Preparing bootloader files SD for EMEV firmware update
-UBOOTSRC=/media/u02/RenesasEV2/bootloader/u-boot
+UBOOT=/media/u02/RenesasEV2/bootloader/u-boot
 DEST=$AOSP/device/renesas/emev/pack/
 
-cd $UBOOTSRC
 echo "making SD-boot loaders ... "
+cd $UBOOT
 make distclean
 make emev_sd_line_config
 make
@@ -13,6 +13,11 @@ echo "making EMMC-boot loader ... "
 make distclean
 make emev_emmc_config
 make
+if [[ $? -ne 0 ]]
+then
+    echo "compilation failed"
+    exit -1
+fi
 cp ./u-boot-emmc.bin $DEST/uboot4.bin
 echo "moving companion files ... "
 cp -r ./fwupd/* $DEST
