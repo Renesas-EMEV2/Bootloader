@@ -1,6 +1,6 @@
 # Preparing bootloader files SD for EMEV firmware update
-UBOOT=/media/u02/RenesasEV2/bootloader/u-boot
-DEST=$AOSP/device/renesas/emev/pack/
+UBOOT=..
+DEST=$1
 
 echo "making SD-boot loaders ... "
 cd $UBOOT

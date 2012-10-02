@@ -155,15 +155,13 @@ cat rcS
     fi
 ...
 
-The boot command includes "init=/linuxrc", which points to a standard busybox executable. This will by default invoke the "::sysinit:/etc/init.d/rcS" action. This is how install.sh is invoked. Inside install.sh, you will find the instructin to transfer the bootloader, complete kernel image and Android file system onto the internal NAND partitions.
+The boot command includes "init=/linuxrc", which points to a standard busybox executable. This will by default invoke the "::sysinit:/etc/init.d/rcS" action. This is how install.sh is invoked. Inside install.sh, you will find the instructions to transfer the bootloader, final kernel image and Android file system onto the internal NAND partitions.
 
-The process istanerted
+An example script to prepare an SD card for a firmware update is given:
 
-An example script to prepare an SD card for firmware update is given:
+ fwupd/fwupd.sh <destination>
 
- fwupd/fwupd.sh
-
-which will generate all bootlaoder binaries and move files to destination, which could also be the SD card root dir.
+which will generate all bootlaoder binaries and move files to destination path, which could also be the SD card root dir.
 
 NOTE - The android file system (android-fs4.tar.gz) and kernel image (uImage4) are not included and should be loaded onto SD separately.
 
