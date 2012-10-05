@@ -1,6 +1,18 @@
 # Preparing bootloader files SD for EMEV firmware update
-UBOOT=/media/u02/RenesasEV2/bootloader/u-boot
-DEST=$AOSP/device/renesas/emev/pack/
+#!/bin/sh
+
+UBOOT=..
+DEST=$1
+
+if [ $# -eq 0 ] ; then
+	echo "Usage: fwupd.sh <destination>"
+	exit 1
+fi
+
+if [ ! -d ${1} ] ; then
+	echo "Invalid destination dir"
+	exit 1
+fi
 
 echo "making SD-boot loaders ... "
 cd $UBOOT
@@ -20,5 +32,5 @@ then
 fi
 cp ./u-boot-emmc.bin $DEST/uboot4.bin
 echo "moving companion files ... "
-cp -r ./fwupd/* $DEST
+cp -r ./fwupd/files/* $DEST
 

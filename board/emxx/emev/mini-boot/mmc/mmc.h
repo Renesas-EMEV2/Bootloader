@@ -28,7 +28,7 @@
 #define KERNEL_SIZE		0x00480000	/* 4.5M */
 #define KERNEL_SIZE		0x00500000	/* 5M */
 
-#define FS_START		0x46000000	/* SDRAM */
+#define FS_START		0x56000000	/* SDRAM */
 #define FS_SIZE			0x01c00000	/* 28M */
 
 #define MINIBOOT_WORK		0x42000000

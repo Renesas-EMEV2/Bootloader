@@ -29,17 +29,17 @@ Then jump to u-boot
 
 Source code of mini-boot can be found inside board/emxx/emev.
 
-File names for the SD-type boot are hardcoded in board/emxx/emev/mini-boot/mmc/mmc.c (line 668):
+File names are hardcoded in board/emxx/emev/mini-boot/mmc/mmc.c :
 
 static const unsigned char match_name[3][8] = {
+#if defined(CONFIG_EMXX_EMMCBOOT)
+	{0x75, 0x62, 0x6F, 0x6F, 0x74, 0x34, 0x20, 0x20},	/* uboot4 */
+	{0x75, 0x49, 0x6D, 0x61, 0x67, 0x65, 0x34, 0x20},	/* uImage4 */
+#else
 	{0x75, 0x62, 0x6F, 0x6F, 0x74, 0x2D, 0x73, 0x64},	/* uboot-sd */
 	{0x75, 0x49, 0x6D, 0x61, 0x67, 0x65, 0x20, 0x20},	/* uImage */
+#endif
 	{0x63, 0x72, 0x61, 0x6D, 0x66, 0x73, 0x20, 0x20},	/* cramfs */
-};
-static const unsigned char MATCH_NAME[3][8] = {
-	{0x55, 0x42, 0x4F, 0x4F, 0x54, 0x2D, 0x53, 0x44},	/* UBOOT-SD */
-	{0x55, 0x49, 0x4D, 0x41, 0x47, 0x45, 0x20, 0x20},	/* UIMAGE */
-	{0x43, 0x52, 0x41, 0x4D, 0x46, 0x53, 0x20, 0x20},	/* CRAMFS */
 };
 
 There will be different boot arguments from u-boot, whose definitions can be found in include/configs/emev.h. E.g
@@ -142,11 +142,12 @@ Note - sdboot.bin and uboot-sd.bin built from "emev_sd_line_config"
 
 Mounting for example onto a host Linux sytem the "cramfs" found in a typical stock firmware package from a Livall tablet, you can find how flashing works. E.g:
 
-sudo mkdir /mnt/cramfs
-sudo mount -o loop cramfs /mnt/cramfs
-ls -l /mnt/cramfs/linuxrc
-lrwxrwxrwx 1 root root 11 1970-01-01 01:00 /mnt/cramfs/linuxrc -> bin/busybox
-cd /mnt/cramfs/etc/init.d
+sudo mkdir /tmp/cramfs
+sudo mount -o loop cramfs /tmp/cramfs
+su
+ls -l /tmp/cramfs/linuxrc
+lrwxrwxrwx 1 root root 11 1970-01-01 01:00 /tmp/cramfs/linuxrc -> bin/busybox
+cd /tmp/cramfs/etc/init.d
 cat rcS
 ...
     INSTALL_SH=`ls /tmp/sd/install.sh`
@@ -155,21 +156,23 @@ cat rcS
     fi
 ...
 
-The boot command includes "init=/linuxrc", which points to a standard busybox executable. This will by default invoke the "::sysinit:/etc/init.d/rcS" action. This is how install.sh is invoked. Inside install.sh, you will find the instructin to transfer the bootloader, complete kernel image and Android file system onto the internal NAND partitions.
-
-The process istanerted
-
-An example script to prepare an SD card for firmware update is given:
-
- fwupd/fwupd.sh
-
-which will generate all bootlaoder binaries and move files to destination, which could also be the SD card root dir.
-
-NOTE - The android file system (android-fs4.tar.gz) and kernel image (uImage4) are not included and should be loaded onto SD separately.
+The boot command includes "init=/linuxrc", which points to a standard busybox executable. This will by default invoke the "::sysinit:/etc/init.d/rcS" action. This is how install.sh is invoked. Inside install.sh, you will find the instructions to transfer the bootloader, final kernel image and Android file system onto the internal NAND partitions.
 
  - - - - -
 
-Running a "bootable" SD card
+Preparing an SD card for device firmware update
+
+An example script to prepare an SD card for a firmware update is given:
+
+ fwupd/fwupd.sh <destination>
+
+which will generate all bootlaoder binaries and move files to destination path, which should be the SD card root dir.
+
+NOTE - The android file system (android-fs4.tar.gz) and kernel image (uImage4) are not included here and should be loaded onto SD separately.
+
+ - - - - -
+
+Preparing a "bootable" SD card
 
 Booting from SD card is normally meant for firmware updates, but we could also make the system start the Android on the SD card itself, by properly partitioning and preparing it to be bootable, for faster test cycles during development stages.
 

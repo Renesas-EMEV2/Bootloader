@@ -895,7 +895,7 @@ mini_boot( void )
 	/* kernel read */
 	src  = mbr_data->partitionTable[1].firstSectorNumbers;
 	dest = (unsigned int)KERNEL_START;
-	dbg_print_val("load kernel_info %x\n", src);
+	dbg_print_val("loading kernel info @ %x\n", src);
 	ret = mmc_multi_block_read(src, (unsigned char *)dest, MMC_BLOCKLEN_VAL);
 	if (ret != 0) {
 		dbg_print_val("read error\n", ret);
@@ -909,7 +909,7 @@ mini_boot( void )
 	k_size |= (unsigned int)(*head_ptr++);
 	k_size <<= 8;
 	k_size |= (unsigned int)*head_ptr;
-	dbg_print_val("load kernel %x\n", (k_size + 64));
+	dbg_print_val("loading kernel - size: %d\n", (k_size + 64));
 	ret = mmc_multi_block_read(src, (unsigned char *)dest, (k_size + 64));
 	if (ret != 0) {
 		dbg_print_val("read error\n", ret);

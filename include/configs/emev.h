@@ -135,7 +135,7 @@
 #else
 #define CONFIG_CRAMFSCMD	"setenv bootargs root=/dev/null noinitrd init=/linuxrc console=ttyS0,115200n8n SELINUX_INIT=no \$(cfg_ddr) ro video=qfb: ip=none rootflags=physaddr=0x00500000\;bootm 00080000"
 #ifdef CONFIG_EMXX_SDBOOT_LINE	/* SD boot linesystem */
-#define CONFIG_EXT3CMD		"setenv bootargs root=/dev/null noinitrd init=/linuxrc console=ttyS0,115200n8n SELINUX_INIT=no mem=96M@0x40000000 rw video=qfb: ip=none rootflags=physaddr=0x46000000\;bootm 40007fc0"
+#define CONFIG_EXT3CMD		"setenv bootargs root=/dev/null noinitrd init=/linuxrc console=ttyS0,115200n8n SELINUX_INIT=no mem=129M@0x40000000 mem=228M@0x50000000 rw video=qfb: ip=none rootflags=physaddr=0x56000000\;bootm 40007fc0"
 #else
 #define CONFIG_EXT3CMD		"setenv bootargs root=\$(ext3_root) noinitrd init=/init console=ttyS0,115200n8n SELINUX_INIT=no \$(cfg_ddr) rw video=qfb: ip=none rootfstype=ext3 rootwait\;bootm 40007fc0"
 #endif
