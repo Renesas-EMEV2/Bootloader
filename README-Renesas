@@ -150,6 +150,8 @@ lrwxrwxrwx 1 root root 11 1970-01-01 01:00 /tmp/cramfs/linuxrc -> bin/busybox
 cd /tmp/cramfs/etc/init.d
 cat rcS
 ...
+        /bin/mount -t vfat -o codepage=932,iocharset=euc-jp,sync /dev/mmcblk1p1 /tmp/sd
+...
     INSTALL_SH=`ls /tmp/sd/install.sh`
     if [ "$INSTALL_SH" = "/tmp/sd/install.sh" ]; then
         /tmp/sd/install.sh
@@ -168,7 +170,17 @@ An example script to prepare an SD card for a firmware update is given:
 
 which will generate all bootlaoder binaries and move files to destination path, which should be the SD card root dir.
 
-NOTE - The android file system (android-fs4.tar.gz) and kernel image (uImage4) are not included here and should be loaded onto SD separately.
+A pre-compiled uImage is provided here, to allows the system to start a basic cramfs and run the install.sh script. This uImage can also be rebuild from open source kernel code, found at:
+
+ https://github.com/Renesas-EMEV2/RenesasEV2-BSPGB-Kernel
+
+on the 'emev-4.1' branch, using the 'emev_mypad_upd_defconfig' build configuration.
+
+NOTE - The android file system (android-fs4.tar.gz) and final kernel image (uImage4) are not included here and should be loaded onto SD card separately.
+
+See also the "packaging" procedure described at:
+
+ https://github.com/Renesas-EMEV2/Renesas-device_emev/blob/emev-4.1/README
 
  - - - - -
 
