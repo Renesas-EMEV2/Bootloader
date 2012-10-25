@@ -170,15 +170,15 @@ An example script to prepare an SD card for a firmware update is given:
 
 which will generate all bootlaoder binaries and move files to destination path, which should be the SD card root dir.
 
-A pre-compiled uImage is provided here, to allows the system to start a basic cramfs and run the install.sh script. This uImage can also be rebuild from open source kernel code, found at:
+A pre-compiled "uImage" is provided here, used with the cramfs to run installation. This uImage may also be rebuild from open source kernel code, found at:
 
  https://github.com/Renesas-EMEV2/RenesasEV2-BSPGB-Kernel
 
 on the 'emev-4.1' branch, using the 'emev_mypad_upd_defconfig' build configuration.
 
-NOTE - The android file system (android-fs4.tar.gz) and final kernel image (uImage4) are not included here and should be loaded onto SD card separately.
+NOTE - The android file system (android-fs4.tar.gz) and final kernel image (uImage4) are not included here and should be put into fwupd/files before running the script.
 
-See also the "packaging" procedure described at:
+See also the android fs packaging procedure, described at:
 
  https://github.com/Renesas-EMEV2/Renesas-device_emev/blob/emev-4.1/README
 

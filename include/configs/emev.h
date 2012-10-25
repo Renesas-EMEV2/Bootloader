@@ -114,8 +114,10 @@
 #define CONFIG_BOOTDELAY	3
 #endif
 
-#if defined(CONFIG_EMXX_EMMCBOOT) || defined(CONFIG_EMXX_ESDBOOT) 
-#define CONFIG_EXT3_ROOT	"/dev/mmcblk0p3"	/* emmc-boot or esd-boot */
+#if defined(CONFIG_EMXX_EMMCBOOT) 
+#define CONFIG_EXT3_ROOT	"/dev/mmcblk0p5"	/* emmc-boot */
+#elif defined(CONFIG_EMXX_ESDBOOT) 
+#define CONFIG_EXT3_ROOT	"/dev/mmcblk0p3"	/* esd-boot */
 #elif defined(CONFIG_EMXX_SDTEST)
 #define CONFIG_EXT3_ROOT	"/dev/mmcblk1p3"        /* test-sd boot */
 #elif CONFIG_EMEV_EMMC_1Piece

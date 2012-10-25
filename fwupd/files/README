@@ -1,0 +1,39 @@
+
+How to update device firmware
+
+1) Prepare a FAT-formatted SD-Card (should not be larger than 2Gb).
+2) Copy onto SD card all the files from this directory
+3) Put the SD-Card in the tablet and start it with Vol+ (or Vol-) & Power
+4) After a few seconds, a black screen with instructions should appear
+5) User Vol+/Vol- buttons to select option "update system from SD card"
+6) Use Power button to activate the option and wait for completion (steps shown on screen)
+7) When finished, long-press Power button to turn device off, then Power again to restart
+8) First Android boot would take several minutes, before reaching the home screen
+
+SUGGESTION
+
+Update firmare only if you already have a safe version, to rollback in case of failure.
+
+NOTES
+
+- two different kernel images are provided:
+
+ uImage4
+ uImage4_goodix
+
+First one (installed by default) is for a "PixCir" touchscreen model. 
+Some tablets have a "Goodix" touchscreen model, which the second image is built for. 
+If your touch panel doesn't receive inputs after udpate, try renaming uImage4_goodix to uImage4 and re-installing firmware.
+
+- Some features are still missing (e.g. HW-accelarated graphics, sound, g-sensor, HDMI out)
+
+- Some bugs may still be present. Known ones:
+  - screen goes off without turning off backlight
+  - suddenly hanging, sometimes on suspend
+  - ...
+  
+TECHNICAL DETAILS
+
+Find all development info and discussions at 
+
+ https://groups.google.com/forum/?fromgroups=#!forum/renesas-emev-osp
