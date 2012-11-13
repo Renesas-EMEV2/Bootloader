@@ -25,6 +25,10 @@ First one (installed by default) is for a "PixCir" touchscreen model.
 Some tablets have a "Goodix" touchscreen model, which the second image is built for. 
 If your touch panel doesn't receive inputs after udpate, try renaming uImage4_goodix to uImage4 and re-installing firmware.
 
+If you change uImage4, you need to change the MD5 checksum in the update.conf file too. You can recalculate it with
+
+ md5sum uImage4
+
 - Some features are still missing (e.g. HW-accelarated graphics, sound, g-sensor, HDMI out)
 
 - Some bugs may still be present. Known ones:
