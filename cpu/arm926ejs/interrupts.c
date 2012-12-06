@@ -38,8 +38,7 @@
 #include <common.h>
 #include <arm926ejs.h>
 
-#if defined(CONFIG_INTEGRATOR) || defined(CONFIG_AT91CAP9ADK)	\
-	|| defined(CONFIG_VERSATILE)
+#ifdef CONFIG_INTEGRATOR
 
 	/* Timer functionality supplied by Integrator board (AP or CP) */
 
@@ -55,5 +54,4 @@ int interrupt_init (void)
 	return 0;
 }
 
-#endif 
-/* CONFIG_INTEGRATOR || defined(CONFIG_AT91CAP9ADK) || CONFIG_VERSATILE */
+#endif /* CONFIG_INTEGRATOR */

@@ -126,10 +126,6 @@ static void BootpCopyNetParams(Bootp_t *bp)
 		NetCopyIP(&NetServerIP, &bp->bp_siaddr);
 	memcpy (NetServerEther, ((Ethernet_t *)NetRxPkt)->et_src, 6);
 #endif
-#ifdef PRODUCTION_CODE
-	/*
-	 * Server overrides any target value to ensure the correct file is downloaded
-	 */
 	if (strlen(bp->bp_file) > 0)
 		copy_filename (BootFile, bp->bp_file, sizeof(BootFile));
 
@@ -142,23 +138,6 @@ static void BootpCopyNetParams(Bootp_t *bp)
 	if (*BootFile) {
 		setenv ("bootfile", BootFile);
 	}
-#else
-	/*
-	 * During development it is useful to be able to force the bootfile value from the
-	 * target, rather than allowing the server to override it.
-	 */
-	if (strlen(bp->bp_file) > 0 && !getenv("bootfile")) 
-	{
-		/* Propagate to environment:
-		 * Only set when BOOTP / DHCP reply contains a new value
-		 * and bootfile doesn't exist.
-		 */
-		copy_filename (BootFile, bp->bp_file, sizeof(BootFile));
-		setenv ("bootfile", BootFile);
-	}
-	debug ("Bootfile: %s\n", BootFile);
-	
-#endif
 }
 
 static int truncate_sz (const char *name, int maxlen, int curlen)

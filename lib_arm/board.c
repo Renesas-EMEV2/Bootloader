@@ -1,6 +1,4 @@
 /*
- * Copyright (C) 2010 Renesas Electronics Corporation
- *
  * (C) Copyright 2002-2006
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
@@ -56,9 +54,6 @@
 #endif
 #ifdef CONFIG_DRIVER_LAN91C96
 #include "../drivers/net/lan91c96.h"
-#endif
-#if defined(CONFIG_DRIVER_DM9000)
-extern void dm9000_check_mac_addr(const unsigned char *addr);
 #endif
 
 DECLARE_GLOBAL_DATA_PTR;
@@ -167,13 +162,6 @@ static int init_baudrate (void)
 static int display_banner (void)
 {
 	printf ("\n\n%s\n\n", version_string);
-#ifdef __ARMSUPPLIED_
-	printf ("\n\nCode cloned from branch %s of git://linux-arm.org/u-boot-armdev.git\n", ARMLTD_BRANCH);
-	printf ("\n\nRelease %s\n", ARMLTD_RELEASE);
-	printf ("Remote commit cloned   %s\n", ARMLTD_COMMIT_REMOTE);
-	printf ("Latest commit locally  %s\n", ARMLTD_COMMIT_LOCAL);
-	printf ("git state %s\n", ARMLTD_SUPPLEMENTARY);
-#endif
 	debug ("U-Boot code: %08lX -> %08lX  BSS: -> %08lX\n",
 	       _armboot_start, _bss_start, _bss_end);
 #ifdef CONFIG_MODEM_SUPPORT
@@ -223,15 +211,6 @@ static void display_flash_config (ulong size)
 {
 	puts ("Flash: ");
 	print_size (size, "\n");
-#ifdef CONFIG_ENV_IS_IN_FLASH
-# ifdef CONFIG_ENV_ADDR
-#  ifdef CONFIG_REALVIEW
-	gd->bd->bi_env = (struct environment_s *)(gd->bd->flash_base + CONFIG_ENV_OFFSET);
-#  else
-	gd->bd->bi_env = (struct environment_s *)CONFIG_ENV_ADDR;
-#  endif
-# endif
-#endif
 }
 #endif /* CONFIG_SYS_NO_FLASH */
 
@@ -307,74 +286,6 @@ init_fnc_t *init_sequence[] = {
 	NULL,
 };
 
-#ifdef CONFIG_REALVIEW
-extern void icache_flush(void);
-extern void icache_flush_v5t(void);
-extern void icache_flush_v67(void);
-void setup_realview_board_info(void)
-{
-	unsigned long id;
-	unsigned long idwork;
-	/* Read board HBI from System Control Register */
-	int board_hbi =  *((unsigned int *)0x10000000);
-	board_hbi &= 0x0FFF0000; 
-	/*
-	 * Defaults
-	 */
-	gd->bd->is_pb1176 = 0;  
-	gd->bd->flash_base = 0x40000000; 
-	gd->bd->smcrv_base = 0x4E000000; 
-	gd->bd->serial_base = 0x10009000;
-	gd->bd->prompt = malloc(0x18);
-	switch(board_hbi)
-	{
-	case 0x01400000:
-		sprintf(gd->bd->prompt, "RealView EB #");
-		gd->bd->mach_id = 827;
-		break;
-	case 0x01470000:
-		sprintf(gd->bd->prompt, "RealView PB1176 #");
-		gd->bd->mach_id = 1504;
-		gd->bd->is_pb1176 = 1;
-		gd->bd->smcrv_base = 0x3A000000; 
-		gd->bd->serial_base = 0x1010C000;
-		gd->bd->flash_base = 0x30000000; 
-		break;
-	case 0x01590000:
-		sprintf(gd->bd->prompt, "RealView PBMPCORE #");
-		gd->bd->mach_id = 1407;
-		break;
-	case 0x01780000:
-		sprintf(gd->bd->prompt, "RealView PBA8 #");
-		gd->bd->mach_id = 1897;
-		break;
-	case 0x01820000:
-		sprintf(gd->bd->prompt, "RealView PBX #");
-		gd->bd->mach_id = 1901;
-		break;
-	default:
-		reset_cpu(0);
-		break;
-	}
-	/* Now attempt to determine the CPU architecture & set the cache routines accordingly */
-	asm ("mrc p15, 0, %0, c0, c0, 0":"=r" (id));
-
-	/* Just using the architecture code at present to seperate v6, v7 */
-	idwork = id << 12;
-	idwork = idwork >>28;
-	gd->bd->bi_arch_number = idwork;
-	switch(idwork)
-	{
-	case 0xF: /* Revised - ASSUME v6/7 */
-		gd->bd->icache_flush_arch = icache_flush_v67;
-		break;
-	default: /* default to v5t TODO: Should be v4t if pushed back to mainline */
-		gd->bd->icache_flush_arch = icache_flush_v5t;
-		break;
-	}
-}
-#endif	/* CONFIG_REALVIEW */
-
 void start_armboot (void)
 {
 	init_fnc_t **init_fnc_ptr;
@@ -394,17 +305,6 @@ void start_armboot (void)
 
 	gd->flags |= GD_FLG_RELOC;
 
-#ifdef CONFIG_REALVIEW
-	/*
-	 * From here on we start using board dependent stuff
-	 * - so we'd better determine the board id
-	 */
-	{
-		setup_realview_board_info();
-	}
-#endif	/* CONFIG_REALVIEW */
-
-
 	monitor_flash_len = _bss_start - _armboot_start;
 
 	for (init_fnc_ptr = init_sequence; *init_fnc_ptr; ++init_fnc_ptr) {
@@ -412,7 +312,6 @@ void start_armboot (void)
 			hang ();
 		}
 	}
-
 
 #ifndef CONFIG_SYS_NO_FLASH
 	/* configure available FLASH banks */
@@ -548,12 +447,6 @@ extern void davinci_eth_set_mac_addr (const u_int8_t *addr);
 		smc_set_mac_addr(gd->bd->bi_enetaddr);
 	}
 #endif /* CONFIG_DRIVER_SMC91111 || CONFIG_DRIVER_LAN91C96 */
-
-#if defined(CONFIG_DRIVER_DM9000)
-	if (getenv ("ethaddr")) {
-		dm9000_check_mac_addr(gd->bd->bi_enetaddr);
-	}
-#endif /* CONFIG_DRIVER_DM9000 */
 
 	/* Initialize from environment */
 	if ((s = getenv ("loadaddr")) != NULL) {

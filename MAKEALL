@@ -520,9 +520,6 @@ LIST_ARM9="			\
 	versatileab		\
 	versatilepb		\
 	voiceblue		\
-	realview_eb		\
-	realview_pb1176		\
-	realview_pb11mp		\
 	davinci_dvevm		\
 	davinci_schmoogie	\
 	davinci_sffsdr		\
@@ -554,14 +551,12 @@ LIST_ARM11="		\
 #########################################################################
 ## ARM Cortex-A8 Systems
 #########################################################################
-LIST_ARM_CORTEX="		\
+LIST_ARM_CORTEX_A8="		\
 	omap3_beagle		\
 	omap3_overo		\
 	omap3_evm		\
 	omap3_pandora		\
 	omap3_zoom1		\
-	realview_pba8		\
-	realview_pbx    	\
 "
 
 #########################################################################
@@ -624,7 +619,7 @@ LIST_arm="			\
 	${LIST_ARM9}		\
 	${LIST_ARM10}		\
 	${LIST_ARM11}		\
-	${LIST_ARM_CORTEX}	\
+	${LIST_ARM_CORTEX_A8}	\
 	${LIST_at91}		\
 	${LIST_pxa}		\
 	${LIST_ixp}		\
@@ -855,7 +850,7 @@ build_target() {
 for arg in $@
 do
 	case "$arg" in
-	arm|SA|ARM7|ARM9|ARM10|ARM11|ARM_CORTEX|at91|ixp|pxa \
+	arm|SA|ARM7|ARM9|ARM10|ARM11|ARM_CORTEX_A8|at91|ixp|pxa \
 	|avr32 \
 	|blackfin \
 	|coldfire \

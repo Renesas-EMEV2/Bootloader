@@ -26,7 +26,6 @@ PLATFORM_RELFLAGS += -fno-strict-aliasing  -fno-common -ffixed-r8 \
 	-msoft-float
 
 PLATFORM_CPPFLAGS += -march=armv4 -mtune=arm7tdmi
-PLATFORM_CPPFLAGS += -mno-thumb-interwork
 # =========================================================================
 #
 # Supply options according to compiler version

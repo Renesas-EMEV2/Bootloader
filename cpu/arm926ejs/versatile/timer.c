@@ -38,9 +38,7 @@
 #include <common.h>
 #include <arm926ejs.h>
 
-#ifndef TIMER_LOAD_VAL
-# define TIMER_LOAD_VAL 0xffffffff
-#endif
+#define TIMER_LOAD_VAL 0xffffffff
 
 /* macro to read the 32 bit timer */
 #define READ_TIMER (*(volatile ulong *)(CONFIG_SYS_TIMERBASE+4))
