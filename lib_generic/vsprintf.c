@@ -21,8 +21,7 @@
 extern int do_reset (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[]);
 #endif
 
-// PMP unsigned long simple_strtoul(const char *cp,char **endp,unsigned int base)
-ulong simple_strtoul(const char *cp,char **endp,unsigned int base)
+unsigned long simple_strtoul(const char *cp,char **endp,unsigned int base)
 {
 	unsigned long result = 0,value;
 

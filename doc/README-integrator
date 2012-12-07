@@ -1,12 +1,12 @@
 
 		U-Boot for ARM Integrator Development Platforms
 
-		Peter Pearse, ARM Ltd.
-		peter.pearse@arm.com
-		www.arm.com
+			Peter Pearse, ARM Ltd.
+			peter.pearse@arm.com
+			     www.arm.com
 
-Manuals may be available from :-
-http://www.arm.com/documentation/Boards_and_Firmware/index.html
+Manuals available from :-
+http://www.arm.com/products/DevTools/Hardware_Platforms.html
 
 Overview :
 --------
@@ -54,7 +54,7 @@ for ARM Integrator CMs has been added
 
 	cpu/arm_intcm
 
-Otherwise, for example, the standard CM reset via the CM control register would
+Otherwise. for example,  the standard CM reset via the CM control register would
 need placing in each CM processor file......
 
 Code specific to the initialization of the CM, rather than the cpu, and initialization
@@ -64,20 +64,20 @@ of the Integrator board itself, has been placed in
 	board/integrator<>/integrator<>.c
 
 Targets
---------
+=======
 The U-Boot make targets map to the available core modules as below.
 
 Integrator/AP is no longer available from ARM.
 Core modules marked ** are also no longer available.
 
-ap720t_config	** CM720T
-ap920t_config	** CM920T
+ap720t_config		** CM720T
+ap920t_config		** CM920T
 ap926ejs_config	Integrator Core Module for ARM926EJ-STM
-ap946es_config	Integrator Core Module for ARM946E-STM
-cp920t_config	** CM920T
+ap946es_config		Integrator Core Module for ARM946E-STM
+cp920t_config		** CM920T
 cp926ejs_config	Integrator Core Module for ARM926EJ-STM
-cp946es_config	Integrator Core Module for ARM946E-STM
-cp1136_config	Integrator Core Module ARM1136JF-STM
+cp946es_config		Integrator Core Module for ARM946E-STM
+cp1136_config		Integrator Core Module ARM1136JF-S  TM
 
 The final groups of targets are for core modules where no explicit cpu
 code has yet been added to U-Boot i.e. they all use the same U-Boot binary
@@ -88,12 +88,15 @@ ap922_config			Integrator Core Module for ARM922T TM with ETM
 ap922_XA10_config		Integrator Core Module for ARM922T using Altera Excalibur
 ap7_config			** CM7TDMI
 integratorap_config
+ap_config
+
 
 cp966_config			Integrator Core Module for ARM966E-S TM
 cp922_config			Integrator Core Module for ARM922T TM with ETM
 cp922_XA10_config		Integrator Core Module for ARM922T using Altera Excalibur
 cp1026_config			Integrator Core Module ARM1026EJ-S TM
 integratorcp_config
+cp_config
 
 The Makefile targets call board/integrator<>/split_by_variant.sh
 to configure various defines in include/configs/integrator<>.h
@@ -105,11 +108,3 @@ Because of this mechanism
 > make clean
 must be run before each change in configuration
 *********************************
-
-Board Revision Info
-------------------
-U-Boot extracts the following values into the Revision field
-of /proc/cpuinfo:-
-Integrator/AP :	 SC_ID 		@ 0x11000000
-Integrator/CP :	 CP_IDFIELD	@ 0xCB000000
-See the board User Guide for details of the fields values.

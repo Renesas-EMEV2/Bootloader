@@ -40,10 +40,6 @@
 #include <asm/byteorder.h>
 #include <environment.h>
 
-#ifdef CONFIG_REALVIEW
-DECLARE_GLOBAL_DATA_PTR;
-#endif
-
 /*
  * This file implements a Common Flash Interface (CFI) driver for
  * U-Boot.
@@ -276,27 +272,6 @@ u64 flash_read64(void *addr)__attribute__((weak, alias("__flash_read64")));
 
 /*-----------------------------------------------------------------------
  */
-#ifdef CONFIG_REALVIEW
-/* RealView boards have varying flash layouts - bases unknown at compile time */	
-# if defined(CONFIG_ENV_IS_IN_FLASH) || defined(CONFIG_ENV_ADDR_REDUND) || defined(RUNNING_IN_FLASH)
-flash_info_t *flash_get_info(ulong base)
-{
-	int i;
-	flash_info_t * info = 0;
-
-	for (i = 0; i < CONFIG_SYS_MAX_FLASH_BANKS; i++) {
-		info = & flash_info[i];
-		if (info->size && info->start[0] <= base &&
-		    base <= info->start[0] + info->size - 1)
-			break;
-	}
-
-	return i == CONFIG_SYS_MAX_FLASH_BANKS ? 0 : info;
-}
-# endif
-
-#else
-
 #if defined(CONFIG_ENV_IS_IN_FLASH) || defined(CONFIG_ENV_ADDR_REDUND) || (CONFIG_SYS_MONITOR_BASE >= CONFIG_SYS_FLASH_BASE)
 flash_info_t *flash_get_info(ulong base)
 {
@@ -312,9 +287,7 @@ flash_info_t *flash_get_info(ulong base)
 
 	return i == CONFIG_SYS_MAX_FLASH_BANKS ? 0 : info;
 }
-# endif
-
-#endif /* CONFIG_REALVIEW */
+#endif
 
 unsigned long flash_sector_size(flash_info_t *info, flash_sect_t sect)
 {
@@ -1857,7 +1830,7 @@ ulong flash_get_size (phys_addr_t base, int banknum)
 	int erase_region_size;
 	int erase_region_count;
 	struct cfi_qry qry;
-	
+
 	memset(&qry, 0, sizeof(qry));
 
 	info->ext_addr = 0;
@@ -2021,142 +1994,8 @@ void flash_set_verbose(uint v)
 	flash_verbose = v;
 }
 
-
 /*-----------------------------------------------------------------------
  */
-#ifdef CONFIG_REALVIEW
-/* Easier to rebase than merging partial functions */
-/*
-	CONFIG_SYS_FLASH_BASE not known at compile time
-	- the lists must be specified as offsets there from
- */
-unsigned long flash_init (void)
-{
-	unsigned long size = 0;
-	int i;
-#if defined(CONFIG_SYS_FLASH_AUTOPROTECT_LIST)
-	struct apl_s {
-		ulong start;
-		ulong size;
-	} apl[] = CONFIG_SYS_FLASH_AUTOPROTECT_LIST;
-#endif
-
-#ifdef CONFIG_SYS_FLASH_PROTECTION
-	char *s = getenv("unlock");
-#endif
-
-	unsigned long banks_list [CFI_MAX_FLASH_BANKS] = CONFIG_SYS_FLASH_BANKS_LIST;	
-
-	/* Init: no FLASHes known */
-	for (i = 0; i < CONFIG_SYS_MAX_FLASH_BANKS; ++i) {
-		flash_info[i].flash_id = FLASH_UNKNOWN;
-
-		if (!flash_detect_legacy (banks_list[i] + gd->bd->flash_base, i))
-			flash_get_size (banks_list[i] + gd->bd->flash_base, i);
-
-		size += flash_info[i].size;
-		if (flash_info[i].flash_id == FLASH_UNKNOWN) {
-#ifndef CONFIG_SYS_FLASH_QUIET_TEST
-			printf ("## Unknown FLASH on Bank %d "
-				"- Size = 0x%08lx = %ld MB\n",
-				i+1, flash_info[i].size,
-				flash_info[i].size << 20);
-#endif /* CONFIG_SYS_FLASH_QUIET_TEST */
-		}
-#ifdef CONFIG_SYS_FLASH_PROTECTION
-		else if ((s != NULL) && (strcmp(s, "yes") == 0)) {
-			/*
-			 * Only the U-Boot image and it's environment
-			 * is protected, all other sectors are
-			 * unprotected (unlocked) if flash hardware
-			 * protection is used (CONFIG_SYS_FLASH_PROTECTION)
-			 * and the environment variable "unlock" is
-			 * set to "yes".
-			 */
-			if (flash_info[i].legacy_unlock) {
-				int k;
-
-				/*
-				 * Disable legacy_unlock temporarily,
-				 * since flash_real_protect would
-				 * relock all other sectors again
-				 * otherwise.
-				 */
-				flash_info[i].legacy_unlock = 0;
-
-				/*
-				 * Legacy unlocking (e.g. Intel J3) ->
-				 * unlock only one sector. This will
-				 * unlock all sectors.
-				 */
-				flash_real_protect (&flash_info[i], 0, 0);
-
-				flash_info[i].legacy_unlock = 1;
-
-				/*
-				 * Manually mark other sectors as
-				 * unlocked (unprotected)
-				 */
-				for (k = 1; k < flash_info[i].sector_count; k++)
-					flash_info[i].protect[k] = 0;
-			} else {
-				/*
-				 * No legancy unlocking -> unlock all sectors
-				 */
-				flash_protect (FLAG_PROTECT_CLEAR,
-					       flash_info[i].start[0],
-					       flash_info[i].start[0]
-					       + flash_info[i].size - 1,
-					       &flash_info[i]);
-			}
-		}
-#endif /* CONFIG_SYS_FLASH_PROTECTION */
-	}
-
-	/* Monitor protection ON by default */
-# ifdef RUNNING_IN_FLASH
-	flash_protect (FLAG_PROTECT_SET,
-		       CONFIG_SYS_MONITOR_BASE,
-		       CONFIG_SYS_MONITOR_BASE + monitor_flash_len  - 1,
-		       flash_get_info(CONFIG_SYS_MONITOR_BASE));
-#endif
-
-	/* Environment protection ON by default */
-#ifdef CONFIG_ENV_IS_IN_FLASH
-	flash_protect (FLAG_PROTECT_SET,
-		       gd->bd->flash_base + CONFIG_ENV_OFFSET,
-		       gd->bd->flash_base + CONFIG_ENV_OFFSET + CONFIG_ENV_SECT_SIZE - 1,
-		       flash_get_info(gd->bd->flash_base + CONFIG_ENV_OFFSET));
-#endif
-
-	/* Redundant environment protection ON by default */
-#ifdef CONFIG_ENV_ADDR_REDUND
-	flash_protect (FLAG_PROTECT_SET,
-		       CONFIG_ENV_ADDR_REDUND,
-		       CONFIG_ENV_ADDR_REDUND + CONFIG_ENV_SIZE_REDUND - 1,
-		       flash_get_info(CONFIG_ENV_ADDR_REDUND));
-#endif
-
-#if defined(CONFIG_SYS_FLASH_AUTOPROTECT_LIST)
-	for (i = 0; i < (sizeof(apl) / sizeof(struct apl_s)); i++) {
-		debug("autoprotecting from %08x to %08x\n",
-		      apl[i].start + gd->bd->flash_base, apl[i].start  + gd->bd->flash_base + apl[i].size - 1);
-		flash_protect (FLAG_PROTECT_SET,
-			       apl[i].start + gd->bd->flash_base,
-			       apl[i].start + apl[i].size - 1,
-			       flash_get_info(apl[i].start + gd->bd->flash_base));
-	}
-#endif
-
-#ifdef CONFIG_FLASH_CFI_MTD
-	cfi_mtd_init();
-#endif
-
-	return (size);
-}
-
-#else /* CONFIG_REALVIEW */
-
 unsigned long flash_init (void)
 {
 	unsigned long size = 0;
@@ -2280,5 +2119,3 @@ unsigned long flash_init (void)
 
 	return (size);
 }
-#endif /* CONFIG_REALVIEW */
-

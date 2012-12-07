@@ -134,11 +134,6 @@ int do_bootm_linux(int flag, int argc, char *argv[], bootm_headers_t *images)
 
 	cleanup_before_linux ();
 
-#ifdef CONFIG_REALVIEW
-	// Later check for mach_id from environment???
-	machid = gd->bd->mach_id;
-#endif
-
 #ifdef CONFIG_MACH_EM1
 	volatile ulong *hw_info = SRAM_HWINFO_KERNL;
 	*hw_info = *(volatile ulong *)SRAM_HWINFO_BOOT;
@@ -164,6 +159,7 @@ int do_bootm_linux(int flag, int argc, char *argv[], bootm_headers_t *images)
 static void setup_start_tag (bd_t *bd)
 {
 	params = (struct tag *) bd->bi_boot_params;
+
 	params->hdr.tag = ATAG_CORE;
 	params->hdr.size = tag_size (tag_core);
 
