@@ -27,7 +27,7 @@ AOSPDIR="."
 KERNELDIR="."
 
 UIMAGE="${KERNELDIR}/uImage4"
-UIMAGENAME="uImage4"
+UIMAGENAME="uImage"
 SDBOOT="${UBOOTDIR}/sdboot.bin"
 SDBOOTNAME="sdboot.bin"
 PATCHED_UBOOT="${UBOOTDIR}/uboot-sd.bin"
