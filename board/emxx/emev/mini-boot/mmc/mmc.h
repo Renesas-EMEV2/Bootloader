@@ -25,8 +25,8 @@
 #define SD_BOOT_MAX_LOADSIZE	0x00040000	/* 256K */
 
 #define KERNEL_START		CONFIG_SYS_LOAD_ADDR	/* SDRAM */
-#define KERNEL_SIZE		0x00480000	/* 4.5M */
-#define KERNEL_SIZE		0x00500000	/* 5M */
+/* #define KERNEL_SIZE		0x00480000	 4.5M */
+#define KERNEL_SIZE		0x00600000	/* 6M */
 
 #define FS_START		0x5e400000	/* SDRAM */
 #define FS_SIZE			0x01c00000	/* 28M */
