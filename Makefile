@@ -2975,8 +2975,11 @@ omap3_zoom1_config :	unconfig
 
 emev_config \
 emev_emmc_config \
+emev_emmc_2ddr_config \
 emev_sd_config \
+emev_sd_2ddr_config \
 emev_sdtest_config \
+emev_sdtest_2ddr_config \
 emev_esd_config \
 emev_cfi_emmc_config \
 emev_cfi_sd_config \
@@ -2985,6 +2988,7 @@ emev_500M_emmc_config \
 emev_500M_sd_config \
 emev_500M_esd_config \
 emev_sd_line_config \
+emev_sd_line_2ddr_config \
 emev_pdium_config \
 emev_pdium_emmc_config : unconfig
 	@if  [ "$(findstring _sd_, $@)" ] ; then \
@@ -3003,6 +3007,10 @@ emev_pdium_emmc_config : unconfig
 	else \
 		echo Add EMEV NOR BOOT Option ; \
 		echo "#define CONFIG_EMXX_NORBOOT"  > $(obj)include/config.h; \
+	fi
+	@if  [ "$(findstring _2ddr_, $@)" ] ; then \
+		echo Use 2DDR Chips configuration ; \
+		echo "#define EMEV_CONFIG_2DDR" >> ./include/config.h ; \
 	fi
 	@if  [ "$(findstring _cfi_, $@)" ] ; then \
 		echo Add EMEV UnUse Async Bridge Option ; \
