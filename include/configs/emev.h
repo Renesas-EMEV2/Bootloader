@@ -127,7 +127,9 @@
 #endif
 
 /* #define CONFIG_DDR		"mem=167M"	/* 167MByte */
-#define CONFIG_DDR              "mem=129M@0x40000000 mem=256M@0x50000000"
+/* #define CONFIG_DDR              "mem=129M@0x40000000 mem=256M@0x50000000" */
+#define CONFIG_DDR		"mem=163M@0x40000000 mem=256M@0x50000000"
+
 
 #define CONFIG_BOOTARGS		"root=/dev/null noinitrd init=/linuxrc console=ttyS0,115200n8n SELINUX_INIT=no "CONFIG_DDR" ro video=qfb: ip=none rootflags=physaddr=0x00500000"
 
