@@ -1,5 +1,6 @@
-# Preparing bootloader files SD for EMEV firmware update
 #!/bin/sh
+# Preparing bootloader files SD for EMEV firmware update
+
 
 UBOOT=..
 DEST=$1
@@ -17,52 +18,62 @@ fi
 echo "making SD-boot loaders ... "
 cd $UBOOT
 make distclean
+if [[ $? -ne 0 ]]
+then
+    echo "SD-boot make clean failed"
+    exit -1
+fi
 make emev_sd_line_config
+if [[ $? -ne 0 ]]
+then
+    echo "SD-boot make config failed"
+    exit -1
+fi
 make
 if [[ $? -ne 0 ]]
 then
-    echo "compilation failed"
+    echo "SD-boot make failed"
     exit -1
 fi
-cp ./sdboot.bin $DEST/sdboot.bin
-cp ./uboot-sd.bin $DEST/uboot-sd.bin
+cp ./sdboot.bin ./fwupd/files/sdboot.bin
+cp ./uboot-sd.bin ./fwupd/files/uboot-sd.bin
 
 echo "making EMMC-boot loader ..."
 make distclean
+if [[ $? -ne 0 ]]
+then
+    echo "EMMC-boot make clean failed"
+    exit -1
+fi
 make emev_emmc_config
+if [[ $? -ne 0 ]]
+then
+    echo "EMMC-boot make config failed"
+    exit -1
+fi
 make
 if [[ $? -ne 0 ]]
 then
-    echo "compilation failed"
+    echo "EMMC-boot make failed"
     exit -1
 fi
-cp ./u-boot-emmc.bin $DEST/uboot4.bin
+cp ./u-boot-emmc.bin ./fwupd/files/uboot4.bin
 
 echo "calculating MD5 checksums ..."
-MD5=`md5sum ./fwupd/files/android-fs4.tar.gz | awk '{print $1}'`
+./fwupd/md5.sh ./fwupd/files
 if [[ $? -ne 0 ]]
 then
-    echo "MD5 checksum failed"
+    echo "MD5 checksums failed"
     exit -1
 fi
-echo "androidfs="$MD5 > ./fwupd/files/update.conf
-MD5=`md5sum $DEST/uboot4.bin | awk '{print $1}'`
-if [[ $? -ne 0 ]]
-then
-    echo "MD5 checksum failed"
-    exit -1
-fi
-echo "uboot="$MD5 >> ./fwupd/files/update.conf
-MD5=`md5sum ./fwupd/files/uImage4 | awk '{print $1}'`
-if [[ $? -ne 0 ]]
-then
-    echo "MD5 checksum failed"
-    exit -1
-fi
-echo "uimage="$MD5 >> ./fwupd/files/update.conf
 
 echo "moving files to destination ..."
 cp -r ./fwupd/files/* $DEST
+if [[ $? -ne 0 ]]
+then
+    echo "file copy failed"
+    exit -1
+fi
 sync
 echo "DONE"
 
