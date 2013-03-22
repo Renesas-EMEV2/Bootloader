@@ -114,51 +114,60 @@
 #define CONFIG_BOOTDELAY	3
 #endif
 
+/* debug stage */
+#define CONFIG_BOOTDELAY	3
+
 #if defined(CONFIG_EMXX_EMMCBOOT) 
 #define CONFIG_EXT3_ROOT	"/dev/mmcblk0p5"	/* emmc-boot */
+#define	CONFIG_CRAMFS_ROOT	"/dev/mmcblk0p3"	/* emmc cramfs ext3 */
 #elif defined(CONFIG_EMXX_ESDBOOT) 
 #define CONFIG_EXT3_ROOT	"/dev/mmcblk0p3"	/* esd-boot */
+#define	CONFIG_CRAMFS_ROOT	"/dev/mmcblk0p3"	/* emmc cramfs ext3 */
 #elif defined(CONFIG_EMXX_SDTEST)
 #define CONFIG_EXT3_ROOT	"/dev/mmcblk1p3"        /* test-sd boot */
+#define	CONFIG_CRAMFS_ROOT	"/dev/mmcblk1p3"	/* emmc cramfs ext3 */
 #elif CONFIG_EMEV_EMMC_1Piece
 #define CONFIG_EXT3_ROOT	"/dev/mmcblk1p3"	/* sd-boot (emmc 1 device) */
+#define CONFIG_CRAMFS_ROOT	"/dev/mmcblk1p3"	/* sd cramfs ext3 */
 #else
 #define CONFIG_EXT3_ROOT	"/dev/mmcblk2p3"	/* sd-boot (emmc 2 device) */
+#define CONFIG_CRAMFS_ROOT	"/dev/mmcblk2p3"	/* sd cramfs ext3 */
 #endif
 
-/* #define CONFIG_DDR		"mem=167M"	/* 167MByte */
-/* #define CONFIG_DDR              "mem=129M@0x40000000 mem=256M@0x50000000" */
-#define CONFIG_DDR		"mem=163M@0x40000000 mem=256M@0x50000000"
-
-
 #define CONFIG_BOOTARGS		"root=/dev/null noinitrd init=/linuxrc console=ttyS0,115200n8n SELINUX_INIT=no "CONFIG_DDR" ro video=qfb: ip=none rootflags=physaddr=0x00500000"
+
+#if defined(CONFIG_EMXX_MMCBOOT) || defined(CONFIG_EMXX_SDTEST)
+#define CONFIG_BOOTCOMMAND	"printenv; run ext3cmd"
+#define CONFIG_DDR		"mem=163M@0x40000000 mem=256M@0x50000000"
+#else
+#define CONFIG_BOOTCOMMAND	"printenv; run cramfscmd"
+#define CONFIG_DDR		"mem=96M@0x40000000"
+#endif
 
 #ifdef CONFIG_EMXX_PALLADIUM
 #define CONFIG_CRAMFSCMD	"setenv bootargs root=/dev/null noinitrd init=/linuxrc console=ttyS0,460800n8n SELINUX_INIT=no \$(cfg_ddr) ro video=qfb: ip=none rootflags=physaddr=0x00400000\;bootm 00080000"
 #define CONFIG_EXT3CMD		"setenv bootargs root=/dev/null noinitrd init=/linuxrc console=ttyS0,460800n8n SELINUX_INIT=no \$(cfg_ddr) ro video=qfb: ip=none rootflags=physaddr=0x00400000\;bootm 40007fc0"
-#else
-#define CONFIG_CRAMFSCMD	"setenv bootargs root=/dev/null noinitrd init=/linuxrc console=ttyS0,115200n8n SELINUX_INIT=no \$(cfg_ddr) ro video=qfb: ip=none rootflags=physaddr=0x00500000\;bootm 00080000"
+#else /* CONFIG_EMXX_PALLADIUM */
+
 #ifdef CONFIG_EMXX_SDBOOT_LINE	/* SD boot linesystem */
-#define CONFIG_EXT3CMD		"setenv bootargs root=/dev/null noinitrd init=/linuxrc console=ttyS0,115200n8n SELINUX_INIT=no mem=129M@0x40000000 mem=228M@0x50000000 rw video=qfb: ip=none rootflags=physaddr=0x5e400000\;bootm 40007fc0"
+#define CONFIG_EXT3CMD		"setenv bootargs root=/dev/null noinitrd init=/init console=ttyS0,115200n8n SELINUX_INIT=no \$(cfg_ddr) rw video=qfb: ip=none rootflags=physaddr=0x46000000\;bootm 40007fc0"
+#define CONFIG_CRAMFSCMD        "setenv bootargs root=/dev/null noinitrd init=/linuxrc console=ttyS0,115200n8n SELINUX_INIT=no mem=96M@0x40000000 rw video=qfb: ip=none rootflags=physaddr=0x46000000\;bootm 40007fc0"
 #else
 #define CONFIG_EXT3CMD		"setenv bootargs root=\$(ext3_root) noinitrd init=/init console=ttyS0,115200n8n SELINUX_INIT=no \$(cfg_ddr) rw video=qfb: ip=none rootfstype=ext3 rootwait\;bootm 40007fc0"
+#define CONFIG_CRAMFSCMD	"setenv bootargs root=\$(cramfs_root) noinitrd init=/linuxrc console=ttyS0,115200n8n SELINUX_INIT=no \$(cfg_ddr) rw video=qfb: ip=none rootfstype=ext3 rootwait\;bootm 40007fc0"
+
 #endif
+
 #endif
 #define CONFIG_NFSCMD		"setenv bootargs root=/dev/nfs noinitrd init=/linuxrc console=ttyS0,115200n8n SELINUX_INIT=no \$(cfg_ddr) ro video=qfb: nfsroot=\$(serverip):\$(rootpath),timeo=30 ip=\$(ipaddr):\$(serverip):\$(gatewayip):\$(netmask):\$(hostname):eth0:off\;bootm 00080000"
 
-#if defined(CONFIG_EMXX_MMCBOOT) || defined(CONFIG_EMXX_SDTEST)
-#define CONFIG_BOOTCOMMAND	"run ext3cmd"
-#else
-#define CONFIG_BOOTCOMMAND	"run cramfscmd"
-#endif
-
 #define CONFIG_EXTRA_ENV_SETTINGS	\
-	"cramfscmd="	CONFIG_CRAMFSCMD			"\0"	\
-	"ext3cmd="		CONFIG_EXT3CMD			"\0"	\
-	"nfscmd="		CONFIG_NFSCMD			"\0"	\
-	"cfg_ddr="		CONFIG_DDR			"\0"	\
-	"ext3_root="	CONFIG_EXT3_ROOT			"\0"
-
+	"cramfscmd="	CONFIG_CRAMFSCMD		"\0"	\
+	"ext3cmd="	CONFIG_EXT3CMD			"\0"	\
+	"nfscmd="	CONFIG_NFSCMD			"\0"	\
+	"cfg_ddr="	CONFIG_DDR			"\0"	\
+	"ext3_root="	CONFIG_EXT3_ROOT		"\0"    \
+	"cramfs_root="	CONFIG_CRAMFS_ROOT	        "\0"
 
 #define CONFIG_IPADDR		192.168.1.100
 #define CONFIG_SERVERIP		192.168.1.1
@@ -252,7 +261,7 @@
 #define CONFIG_ENV_OFFSET		0x200			/* environment starts p1 + here  */
 #endif
 
-#else
+#else 
 #ifdef CONFIG_EMXX_PALLADIUM
 #define CONFIG_ENV_IS_NOWHERE
 #else

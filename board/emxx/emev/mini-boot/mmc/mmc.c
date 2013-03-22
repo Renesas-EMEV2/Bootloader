@@ -824,9 +824,9 @@ fat_cpy_data(unsigned char *read_data, fat_info_t *fat_info, unsigned int start_
 	}
 	if (last_flag != 1) {
 		if (SD_BOOT_MAX_LOADSIZE == max_size ) {
-			dbg_print(" uboot-sd.bin is over 512KB.\n");
+			dbg_print(" uboot-sd.bin is over max size.\n");
 		} else {
-			dbg_print(" uImage is over max size (KERNEL_SIZE = 5 Mb).\n");
+			dbg_print(" Kernel image is over max size.\n");
 		}
 		return -1;
 	}
