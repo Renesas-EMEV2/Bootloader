@@ -111,11 +111,9 @@
 #ifdef CONFIG_EMXX_PALLADIUM
 #define CONFIG_BOOTDELAY	0
 #else
-#define CONFIG_BOOTDELAY	3
+#define CONFIG_BOOTDELAY	2
+#define	CONFIG_EMXX_VIBRATE	1
 #endif
-
-/* debug stage */
-#define CONFIG_BOOTDELAY	3
 
 #if defined(CONFIG_EMXX_EMMCBOOT) 
 #define CONFIG_EXT3_ROOT	"/dev/mmcblk0p5"	/* emmc-boot */

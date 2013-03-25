@@ -221,6 +221,9 @@ int devices_init (void)
 #if defined(CONFIG_HARD_I2C) || defined(CONFIG_SOFT_I2C)
 	i2c_init (CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 #endif
+#if defined(CONFIG_EMXX_VIBRATE)
+	vibrate_trigger(120);
+#endif
 #ifdef CONFIG_LCD
 	drv_lcd_init ();
 #endif
