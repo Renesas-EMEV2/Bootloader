@@ -931,6 +931,7 @@ mini_boot( void )
 #ifdef CONFIG_EMXX_SDTEST
 	dbg_print("\n\nLoading U-BOOT for a bootable SD-card... ");
 #endif
+
 	fat_info.now_fat_sec = -1;
 	ret = fat_get_cluster(read_data, &fat_info, LOAD_TYPE_UBOOT);
 	if (ret != 0) {

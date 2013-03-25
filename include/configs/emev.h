@@ -110,10 +110,11 @@
  */
 #ifdef CONFIG_EMXX_PALLADIUM
 #define CONFIG_BOOTDELAY	0
+#define CONFIG_ZERO_BOOTDELAY_CHECK	                /* check for keypress on bootdelay==0 */
 #else
 #define CONFIG_BOOTDELAY	2
-#define	CONFIG_EMXX_VIBRATE	1
-#endif
+#define	CONFIG_EMXX_VIBRATE	1   
+#endif              
 
 #if defined(CONFIG_EMXX_EMMCBOOT) 
 #define CONFIG_EXT3_ROOT	"/dev/mmcblk0p5"	/* emmc-boot */
@@ -134,18 +135,18 @@
 
 #define CONFIG_BOOTARGS		"root=/dev/null noinitrd init=/linuxrc console=ttyS0,115200n8n SELINUX_INIT=no "CONFIG_DDR" ro video=qfb: ip=none rootflags=physaddr=0x00500000"
 
-#if defined(CONFIG_EMXX_MMCBOOT) || defined(CONFIG_EMXX_SDTEST)
-#define CONFIG_BOOTCOMMAND	"printenv; run ext3cmd"
-#define CONFIG_DDR		"mem=163M@0x40000000 mem=256M@0x50000000"
-#else
+#if defined (CONFIG_EMXX_SDBOOT_LINE)
 #define CONFIG_BOOTCOMMAND	"printenv; run cramfscmd"
 #define CONFIG_DDR		"mem=96M@0x40000000"
+#else
+#define CONFIG_BOOTCOMMAND	"printenv; run ext3cmd"
+#define CONFIG_DDR		"mem=163M@0x40000000 mem=256M@0x50000000"
 #endif
 
 #ifdef CONFIG_EMXX_PALLADIUM
 #define CONFIG_CRAMFSCMD	"setenv bootargs root=/dev/null noinitrd init=/linuxrc console=ttyS0,460800n8n SELINUX_INIT=no \$(cfg_ddr) ro video=qfb: ip=none rootflags=physaddr=0x00400000\;bootm 00080000"
 #define CONFIG_EXT3CMD		"setenv bootargs root=/dev/null noinitrd init=/linuxrc console=ttyS0,460800n8n SELINUX_INIT=no \$(cfg_ddr) ro video=qfb: ip=none rootflags=physaddr=0x00400000\;bootm 40007fc0"
-#else /* CONFIG_EMXX_PALLADIUM */
+#else /* ! CONFIG_EMXX_PALLADIUM */
 
 #ifdef CONFIG_EMXX_SDBOOT_LINE	/* SD boot linesystem */
 #define CONFIG_EXT3CMD		"setenv bootargs root=/dev/null noinitrd init=/init console=ttyS0,115200n8n SELINUX_INIT=no \$(cfg_ddr) rw video=qfb: ip=none rootflags=physaddr=0x46000000\;bootm 40007fc0"
@@ -154,7 +155,7 @@
 #define CONFIG_EXT3CMD		"setenv bootargs root=\$(ext3_root) noinitrd init=/init console=ttyS0,115200n8n SELINUX_INIT=no \$(cfg_ddr) rw video=qfb: ip=none rootfstype=ext3 rootwait\;bootm 40007fc0"
 #define CONFIG_CRAMFSCMD	"setenv bootargs root=\$(cramfs_root) noinitrd init=/linuxrc console=ttyS0,115200n8n SELINUX_INIT=no \$(cfg_ddr) rw video=qfb: ip=none rootfstype=ext3 rootwait\;bootm 40007fc0"
 
-#endif
+#endif  /* ! CONFIG_EMXX_PALLADIUM */
 
 #endif
 #define CONFIG_NFSCMD		"setenv bootargs root=/dev/nfs noinitrd init=/linuxrc console=ttyS0,115200n8n SELINUX_INIT=no \$(cfg_ddr) ro video=qfb: nfsroot=\$(serverip):\$(rootpath),timeo=30 ip=\$(ipaddr):\$(serverip):\$(gatewayip):\$(netmask):\$(hostname):eth0:off\;bootm 00080000"
