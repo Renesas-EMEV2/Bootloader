@@ -68,6 +68,7 @@ echo "(2) Creating file systems ... will take a while!"
 mkfs.msdos -F 32 -n bootfs4    ${SDCARD}1 >/dev/null 2>&1
 mke2fs -t ext3   -L androidfs4 ${SDCARD}3 >/dev/null 2>&1
 mke2fs -t ext3   -L datafs4    ${SDCARD}5 >/dev/null 2>&1
-mke2fs -t ext3   -L nandfs4    ${SDCARD}6 >/dev/null 2>&1
+#mke2fs -t ext3   -L nandfs4    ${SDCARD}6 >/dev/null 2>&1
+mkfs.msdos -F 32 -F 32 -n nandfs4 ${SDCARD}6 >/dev/null 2>&1
 
 echo "DONE."

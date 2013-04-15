@@ -35,14 +35,12 @@ UBOOTSDNAME="uboot-sd.bin"
 ANDROIDFS="${AOSPDIR}/android-fs4.tar.gz"
 INITRC="init.rc"
 VOLDSTAB="vold.fstab"
-VOLDCONF="vold.conf"
 
 echo "(1) Checking file availabilities ..."
 ls -oh $SDBOOT
 ls -oh $PATCHED_UBOOT
 #ls -oh $INITRC
-#ls -oh $VOLDSTAB
-#ls -oh $VOLDCONF
+ls -oh $VOLDSTAB
 ls -oh $UIMAGE
 ls -oh $ANDROIDFS
 
@@ -63,7 +61,7 @@ echo "(3) Extracting Android fs"
 rm -rf ./_tmp_/pandroid/*
 tar zxf $ANDROIDFS -C ./_tmp_/pandroid/
 #cp -vpf ../$INITRC ./_tmp_/pandroid/
-#cp -vpf ../$VOLDSTAB ../$VOLDCONF ./_tmp_/pandroid/system/etc/
+cp -vpf ./$VOLDSTAB ./_tmp_/pandroid/system/etc/
 
 echo "(3) Cleaning up /data partition"
 rm -rf ./_tmp_/pdata/*
