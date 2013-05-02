@@ -33,13 +33,11 @@ SDBOOTNAME="sdboot.bin"
 PATCHED_UBOOT="${UBOOTDIR}/uboot-sd.bin"
 UBOOTSDNAME="uboot-sd.bin"
 ANDROIDFS="${AOSPDIR}/android-fs4.tar.gz"
-INITRC="init.rc"
 VOLDSTAB="vold.fstab"
 
 echo "(1) Checking file availabilities ..."
 ls -oh $SDBOOT
 ls -oh $PATCHED_UBOOT
-#ls -oh $INITRC
 ls -oh $VOLDSTAB
 ls -oh $UIMAGE
 ls -oh $ANDROIDFS
@@ -60,8 +58,11 @@ cp -vf $PATCHED_UBOOT  ./_tmp_/pboot/$UBOOTSDNAME
 echo "(3) Extracting Android fs"
 rm -rf ./_tmp_/pandroid/*
 tar zxf $ANDROIDFS -C ./_tmp_/pandroid/
-#cp -vpf ../$INITRC ./_tmp_/pandroid/
+# Patching vold file
 cp -vpf ./$VOLDSTAB ./_tmp_/pandroid/system/etc/
+# Patching init.rc for data partition
+sed 's/mmcblk0p6/mmcblk1p5/' ./_tmp_/pandroid/init.rc > ./_tmp_/pandroid/init.rc.fix
+cp -vpf ./_tmp_/pandroid/init.rc.fix ./_tmp_/pandroid/init.rc 
 
 echo "(3) Cleaning up /data partition"
 rm -rf ./_tmp_/pdata/*
