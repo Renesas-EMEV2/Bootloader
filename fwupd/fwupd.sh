@@ -39,7 +39,6 @@ cp ./sdboot.bin ./fwupd/files/sdboot.bin
 cp ./uboot-sd.bin ./fwupd/files/uboot-sd.bin
 
 echo "making EMMC-boot loader ..."
-make distclean
 if [[ $? -ne 0 ]]
 then
     echo "EMMC-boot make clean failed"
